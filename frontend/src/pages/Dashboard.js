@@ -14,10 +14,12 @@ import axios from 'axios';
 import { API_ENDPOINTS } from '../config/api';
 import { useTheme } from '../context/ThemeContext';
 
+// Dashboard: main overview page for ML pipeline monitoring
 const Dashboard = () => {
   const { theme, isDark } = useTheme();
   const [metrics, setMetrics] = useState([]);
   const [alerts, setAlerts] = useState([]);
+  const [lastRefresh, setLastRefresh] = useState(new Date());
   const [healthScore, setHealthScore] = useState(null);
   const [selectedTimeRange, setSelectedTimeRange] = useState('7d');
   const [predictions, setPredictions] = useState([]);
