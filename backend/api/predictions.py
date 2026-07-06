@@ -1,5 +1,6 @@
 """
 Prediction API - Handles user predictions and batch processing
+Version: 1.1.0
 """
 from fastapi import APIRouter, File, UploadFile, HTTPException, Depends
 from sqlalchemy.orm import Session
@@ -19,6 +20,7 @@ class PredictionRequest(BaseModel):
     age: float = Field(..., ge=18, le=100, description="Age of the applicant")
     income: float = Field(..., ge=0, description="Annual income")
     credit_score: float = Field(..., ge=300, le=850, description="Credit score")
+    loan_amount: float = Field(default=0.0, ge=0, description="Requested loan amount")
 
 class PredictionResponse(BaseModel):
     prediction: str
