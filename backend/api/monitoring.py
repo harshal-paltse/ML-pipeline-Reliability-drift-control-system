@@ -5,6 +5,9 @@ from database.models import Metric, Alert
 from monitoring.drift_detector import detect_data_drift
 from monitoring.performance_monitor import monitor_model_performance
 import json
+import logging
+
+logger = logging.getLogger(__name__)
 
 router = APIRouter()
 
