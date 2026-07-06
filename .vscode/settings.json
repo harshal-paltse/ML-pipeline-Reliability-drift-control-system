@@ -1,0 +1,17 @@
+{
+  "python.defaultInterpreterPath": "${workspaceFolder}/backend/venv/Scripts/python.exe",
+  "python.terminal.activateEnvironment": true,
+  "editor.formatOnSave": true,
+  "editor.tabSize": 2,
+  "files.exclude": {
+    "**/__pycache__": true,
+    "**/node_modules": true,
+    "**/.git": true,
+    "**/venv": true,
+    "**/*.pyc": true
+  },
+  "terminal.integrated.defaultProfile.windows": "PowerShell",
+  "emmet.includeLanguages": {
+    "typescriptreact": "html"
+  }
+}

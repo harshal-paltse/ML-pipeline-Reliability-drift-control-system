@@ -1,0 +1,68 @@
+version: '3.9'
+
+services:
+  # ── PostgreSQL ──────────────────────────────────────────────────────────────
+  db:
+    image: postgres:16-alpine
+    container_name: ml_postgres
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER:     mluser
+      POSTGRES_PASSWORD: mlpassword
+      POSTGRES_DB:       mlpipeline
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    ports:
+      - "5432:5432"
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U mluser -d mlpipeline"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
+  # ── FastAPI Backend ─────────────────────────────────────────────────────────
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    container_name: ml_backend
+    restart: unless-stopped
+    environment:
+      DATABASE_URL:         postgresql://mluser:mlpassword@db:5432/mlpipeline
+      PARQUET_DIR:          /app/parquet_data
+      MODEL_DIR:            /app/saved_models
+      LOG_LEVEL:            INFO
+      MONITORING_INTERVAL:  60
+      DRIFT_THRESHOLD:      0.05
+      HEALTH_SCORE_CRITICAL: 50
+    volumes:
+      - parquet_data:/app/parquet_data
+      - model_data:/app/saved_models
+    ports:
+      - "8000:8000"
+    depends_on:
+      db:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8000/health"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  # ── React Frontend ──────────────────────────────────────────────────────────
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+    container_name: ml_frontend
+    restart: unless-stopped
+    ports:
+      - "5173:80"
+    depends_on:
+      backend:
+        condition: service_healthy
+
+volumes:
+  postgres_data:
+  parquet_data:
+  model_data:

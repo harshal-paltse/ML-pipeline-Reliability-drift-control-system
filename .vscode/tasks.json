@@ -1,0 +1,62 @@
+{
+  "version": "2.0.0",
+  "tasks": [
+    {
+      "label": "Start Backend",
+      "type": "shell",
+      "command": "venv\\Scripts\\activate && uvicorn main:app --host 0.0.0.0 --port 8000 --reload",
+      "options": { "cwd": "${workspaceFolder}/backend" },
+      "group": "build",
+      "presentation": {
+        "reveal": "always",
+        "panel": "new",
+        "tabName": "Backend"
+      },
+      "isBackground": true,
+      "problemMatcher": []
+    },
+    {
+      "label": "Start Frontend",
+      "type": "shell",
+      "command": "npm run dev",
+      "options": { "cwd": "${workspaceFolder}/frontend" },
+      "group": "build",
+      "presentation": {
+        "reveal": "always",
+        "panel": "new",
+        "tabName": "Frontend"
+      },
+      "isBackground": true,
+      "problemMatcher": []
+    },
+    {
+      "label": "Install Backend Dependencies",
+      "type": "shell",
+      "command": "venv\\Scripts\\activate && pip install -r requirements.txt",
+      "options": { "cwd": "${workspaceFolder}/backend" },
+      "group": "build",
+      "presentation": { "reveal": "always", "panel": "new" }
+    },
+    {
+      "label": "Install Frontend Dependencies",
+      "type": "shell",
+      "command": "npm install",
+      "options": { "cwd": "${workspaceFolder}/frontend" },
+      "group": "build",
+      "presentation": { "reveal": "always", "panel": "new" }
+    },
+    {
+      "label": "Generate Demo Models",
+      "type": "shell",
+      "command": "venv\\Scripts\\activate && python create_demo_models.py && python upload_demo_models.py",
+      "options": { "cwd": "${workspaceFolder}/backend" },
+      "group": "build",
+      "presentation": { "reveal": "always", "panel": "new" }
+    },
+    {
+      "label": "Start Full Stack",
+      "dependsOn": ["Start Backend", "Start Frontend"],
+      "group": { "kind": "build", "isDefault": true }
+    }
+  ]
+}

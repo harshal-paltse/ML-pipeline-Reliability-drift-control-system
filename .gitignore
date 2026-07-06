@@ -1,0 +1,69 @@
+# ── Python ────────────────────────────────────────────────────────────────────
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+*.egg
+*.egg-info/
+dist/
+build/
+.eggs/
+.mypy_cache/
+.pytest_cache/
+.ruff_cache/
+
+# Virtual environments
+venv/
+env/
+.venv/
+ENV/
+
+# ── Environment & Secrets ────────────────────────────────────────────────────
+.env
+!.env.example
+*.key
+*.pem
+
+# ── Database ─────────────────────────────────────────────────────────────────
+*.db
+*.sqlite
+*.sqlite3
+
+# ── ML Artifacts (generated, not committed) ──────────────────────────────────
+backend/saved_models/
+backend/uploaded_models/
+backend/parquet_data/
+backend/demo_models/
+backend/credit_data.csv
+
+# ── Test / temp files ────────────────────────────────────────────────────────
+backend/test_model_buggy.joblib
+backend/test_pipeline.py
+backend/fix_encoding.py
+backend/upload_demo_models_result.txt
+
+# ── Node.js ───────────────────────────────────────────────────────────────────
+node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# ── Vite / Build ─────────────────────────────────────────────────────────────
+frontend/dist/
+frontend/.vite/
+
+# ── OS ───────────────────────────────────────────────────────────────────────
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# ── IDE ───────────────────────────────────────────────────────────────────────
+.idea/
+*.swp
+*.swo
+*~
+
+# ── Logs ─────────────────────────────────────────────────────────────────────
+*.log
+logs/
