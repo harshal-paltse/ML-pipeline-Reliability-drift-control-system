@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { Table, Tag, Button, Space, Modal, message, Card, Row, Col, Typography, Empty, Statistic, Tabs, Badge, Tooltip } from 'antd';
-import { 
-  ExclamationCircleOutlined, BellOutlined, CheckCircleOutlined, CloseCircleOutlined, 
+import {
+  ExclamationCircleOutlined, BellOutlined, CheckCircleOutlined, CloseCircleOutlined,
   WarningOutlined, InfoOutlined, DeleteOutlined, CheckOutlined
 } from '@ant-design/icons';
 import { useTheme } from '../context/ThemeContext';
@@ -9,8 +9,10 @@ import { useTheme } from '../context/ThemeContext';
 const { Title, Text, Paragraph } = Typography;
 const { confirm } = Modal;
 
+// Alerts: displays active system alerts and notification history
 const Alerts = () => {
   const { theme, isDark } = useTheme();
+  const [loading, setLoading] = useState(false);
   const [alerts, setAlerts] = useState([
     {
       id: 1,
@@ -68,7 +70,7 @@ const Alerts = () => {
       affectedModel: 'Recommendation Engine'
     }
   ]);
-  
+
   const [loading, setLoading] = useState(false);
   const [activeTab, setActiveTab] = useState('all');
 
@@ -119,8 +121,8 @@ const Alerts = () => {
     });
   };
 
-  const filteredAlerts = activeTab === 'all' 
-    ? alerts 
+  const filteredAlerts = activeTab === 'all'
+    ? alerts
     : alerts.filter(a => a.status === activeTab);
 
   const activeCount = alerts.filter(a => a.status === 'active').length;
@@ -188,8 +190,8 @@ const Alerts = () => {
       key: 'status',
       width: 100,
       render: (status) => (
-        <Badge 
-          status={status === 'active' ? 'processing' : 'success'} 
+        <Badge
+          status={status === 'active' ? 'processing' : 'success'}
           text={<Text style={{ fontWeight: 600, fontSize: 12, color: theme.text }}>{status === 'active' ? 'Active' : 'Resolved'}</Text>}
         />
       )
@@ -202,8 +204,8 @@ const Alerts = () => {
         <Space>
           {record.status === 'active' && (
             <Tooltip title="Resolve">
-              <Button 
-                size="small" 
+              <Button
+                size="small"
                 type="primary"
                 icon={<CheckOutlined />}
                 onClick={() => showResolveConfirm(record.id)}
@@ -212,8 +214,8 @@ const Alerts = () => {
             </Tooltip>
           )}
           <Tooltip title="Delete">
-            <Button 
-              size="small" 
+            <Button
+              size="small"
               danger
               icon={<DeleteOutlined />}
               onClick={() => showDeleteConfirm(record.id)}
@@ -354,7 +356,7 @@ const Alerts = () => {
 
         {/* Main Content */}
         <Card className="premium-card" style={{ borderRadius: 20 }}>
-          <Tabs 
+          <Tabs
             activeKey={activeTab}
             onChange={setActiveTab}
             items={[
