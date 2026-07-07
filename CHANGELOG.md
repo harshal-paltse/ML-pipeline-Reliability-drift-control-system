@@ -5,7 +5,20 @@ Format follows [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 ---
 
-## [1.1.0] — 2024-07-07
+## [1.2.0] — 2024-07-07
+
+### Added
+- `backend/tests/test_monitoring.py` — unit tests for `performance_monitor` labeled/unlabeled handling and drift fallback
+- `frontend/src/config/api.js` — `REQUEST_TIMEOUT_MS`, `HTTP_STATUS` constants, batch/manual/upload endpoints
+
+### Fixed
+- `services/scheduler.py` — replaced all `print()` with `logging`, `MONITORING_INTERVAL_MINUTES` env var, checks all active models, idempotent `start()`
+- `monitoring/performance_monitor.py` — skip rows without ground-truth labels to prevent sklearn crash; added `zero_division=0` guard, `min_confidence`, `max_confidence`
+- `docker/docker-compose.yml` — replaced hardcoded DB password with `${POSTGRES_PASSWORD}`, `restart: unless-stopped` on all services, fixed backend port to 8001, added Redis healthcheck
+
+---
+
+
 
 ### Added
 - `CONTRIBUTING.md` with branching strategy and commit conventions
