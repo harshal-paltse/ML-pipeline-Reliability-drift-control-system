@@ -5,7 +5,7 @@ Version: 1.1.0
 from fastapi import APIRouter, File, UploadFile, HTTPException, Depends
 from sqlalchemy.orm import Session
 from pydantic import BaseModel, Field
-from database.connection import SessionLocal, get_db
+from database.connection import get_db
 from database.models import InferenceLog, Model, Dataset
 from services.model_service import model_service
 from datetime import datetime
@@ -134,18 +134,27 @@ async def batch_predict(request: BatchPredictionRequest):
         
         for idx, row in df.iterrows():
             try:
-                confidence = float(np.random.uniform(0.65, 0.99))
-                pred = 1 if np.random.random() > 0.15 else 0
-                
+                # Use model_service for real predictions where possible
+                row_data = row.to_dict()
+                age = float(row_data.get("age", 35))
+                income = float(row_data.get("income", 50000))
+                credit_score = float(row_data.get("credit_score", 650))
+
+                result = model_service.predict(
+                    age=age,
+                    income=income,
+                    credit_score=credit_score
+                )
+                confidence = result["confidence"]
+                pred_label = result["prediction"]
+
                 prediction_obj = {
-                    "transaction_id": f"TXN{str(idx + 1).zfill(6)}",
-                    "amount": str(np.random.uniform(100, 5000))[:7],
-                    "merchant_category": ["E-commerce", "Gas Station", "Restaurant", "Grocery"][np.random.randint(0, 4)],
-                    "time_of_day": ["Morning", "Afternoon", "Evening", "Night"][np.random.randint(0, 4)],
-                    "prediction": "Legitimate" if pred == 1 else "Fraudulent",
+                    "row_index": idx,
+                    "prediction": pred_label,
                     "confidence": round(confidence, 4),
                     "risk_score": round(100 * (1 - confidence), 2),
-                    "status": "Low Risk" if confidence > 0.8 else "High Risk"
+                    "status": "Low Risk" if confidence > 0.8 else "High Risk",
+                    "probability": result.get("probability", {}),
                 }
                 
                 # Log prediction
@@ -199,51 +208,47 @@ class ManualPredictionRequest(BaseModel):
 
 
 @router.post("/manual")
-async def manual_predict(request: ManualPredictionRequest):
+async def manual_predict(
+    request: ManualPredictionRequest,
+    db: Session = Depends(get_db)
+):
     """
-    Make a single prediction using provided features
+    Make a single manual prediction using provided features.
+    Uses the active model via model_service.
     """
+    model = db.query(Model).filter(Model.id == request.model_id).first()
+    if not model:
+        raise HTTPException(status_code=404, detail="Model not found")
+
     try:
-        db = SessionLocal()
-        
-        # Get model
-        model = db.query(Model).filter(Model.id == request.model_id).first()
-        if not model:
-            raise HTTPException(status_code=404, detail="Model not found")
-        
-        # Generate prediction
-        confidence = float(np.random.uniform(0.65, 0.99))
-        legitimate_prob = float(np.random.uniform(0.51, 0.95))
-        fraudulent_prob = 1.0 - legitimate_prob
-        
-        prediction_result = {
-            "prediction": "Approved" if np.random.random() > 0.3 else "Rejected",
-            "confidence": round(confidence * 100, 2),
-            "probability": {
-                "approved": round(legitimate_prob, 4),
-                "rejected": round(fraudulent_prob, 4)
-            },
-            "risk_score": round(100 * (1 - confidence), 2),
-            "recommendation": "Strong" if confidence > 0.8 else "Moderate"
-        }
-        
-        # Log prediction
-        inference_log = InferenceLog(
-            model_id=model.id,
-            input_data={
-                "amount": request.amount,
-                "merchant_type": request.merchant_type,
-                "time_of_day": request.time_of_day,
-                "user_history": request.user_history
-            },
-            prediction=prediction_result,
-            confidence=confidence
+        result = model_service.predict(
+            age=float(request.amount % 60 + 20),       # derive approximate age proxy
+            income=float(request.user_history * 1000),
+            credit_score=float(min(850, max(300, request.amount)))
         )
-        db.add(inference_log)
-        db.commit()
-        db.close()
-        
-        return prediction_result
-        
-    except Exception as e:
-        raise HTTPException(status_code=500, detail=str(e))
+        confidence = result["confidence"]
+        prediction_result = {
+            "prediction": result["prediction"],
+            "confidence": round(confidence * 100, 2),
+            "probability": result.get("probability", {}),
+            "risk_score": round(100 * (1 - confidence), 2),
+            "recommendation": "Strong" if confidence > 0.8 else "Moderate",
+        }
+    except Exception as exc:
+        raise HTTPException(status_code=500, detail=f"Prediction failed: {exc}")
+
+    inference_log = InferenceLog(
+        model_id=model.id,
+        input_data={
+            "amount": request.amount,
+            "merchant_type": request.merchant_type,
+            "time_of_day": request.time_of_day,
+            "user_history": request.user_history,
+        },
+        prediction=prediction_result,
+        confidence=confidence,
+    )
+    db.add(inference_log)
+    db.commit()
+
+    return prediction_result
