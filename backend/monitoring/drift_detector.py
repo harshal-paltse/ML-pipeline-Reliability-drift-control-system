@@ -31,12 +31,13 @@ def detect_data_drift(reference_path: str = "data/training/reference.parquet",
         column_mapping.numerical_features = reference_data.select_dtypes(include=[np.number]).columns.tolist()
         column_mapping.categorical_features = reference_data.select_dtypes(include=['object']).columns.tolist()
 
-        # Create drift report
-        report = Report(metrics=[
-            DatasetDriftMetric(),
-            ColumnDriftMetric(column_name='feature1'),  # Add your features
-            ColumnDriftMetric(column_name='feature2'),
-        ])
+        # Create drift report — dynamically use all numerical columns
+        numerical_cols = column_mapping.numerical_features or []
+        metrics_list = [DatasetDriftMetric()] + [
+            ColumnDriftMetric(column_name=col) for col in numerical_cols[:10]  # cap at 10 columns
+        ]
+
+        report = Report(metrics=metrics_list)
 
         report.run(reference_data=reference_data, current_data=current_data, column_mapping=column_mapping)
 
