@@ -130,7 +130,6 @@ def get_user_or_api_key(
 
     return None
 
-
 def require_auth(user: Optional[User] = Depends(get_user_or_api_key)) -> User:
     if not user:
         raise HTTPException(
