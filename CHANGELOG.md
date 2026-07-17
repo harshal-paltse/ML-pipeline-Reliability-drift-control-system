@@ -5,6 +5,20 @@ Format follows [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 ---
 
+## [1.3.0] — 2024-07-08
+
+### Security
+- `config/settings.env` removed from git tracking — was exposing placeholder DB/email/Slack config publicly; added to `.gitignore`
+- `backend/error.log` removed from git tracking — log files should never be committed
+- `.vscode/` IDE config removed from git tracking — developer-specific, added to `.gitignore`
+- `Desktop/GIT MODULE/` stray folder removed from git tracking
+- `frontend/src/firebase.js` — replaced all hardcoded mock credentials with `process.env.REACT_APP_FIREBASE_*` variables; Firebase only initialises when config is present
+- `config/settings.env.example` added as safe committed template
+- `SECURITY.md` expanded with full 10-point credential checklist
+- `.env.example` updated with all Firebase environment variable keys
+
+---
+
 ## [1.2.0] — 2024-07-07
 
 ### Added

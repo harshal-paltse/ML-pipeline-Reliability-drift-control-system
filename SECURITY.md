@@ -31,3 +31,7 @@ When deploying this system:
 4. **Restrict CORS origins** — set `CORS_ORIGINS` to your exact frontend domain
 5. **Rotate API keys** regularly via the Settings page
 6. **Never commit `.env`** — use `.env.example` as a template only
+7. **Never commit `config/settings.env`** — it is gitignored; use `config/settings.env.example`
+8. **Firebase credentials** — stored in environment variables only, never hardcoded
+9. **Do not commit `.vscode/`** — IDE config is gitignored; each developer manages their own
+10. **Audit dependencies regularly** — run `pip-audit -r backend/requirements.txt`
