@@ -76,6 +76,13 @@ config/settings.env
 
 # ── Editor / OS ───────────────────────────────────────────────────────────────
 .vscode/
+.idea/
+*.swp
+*.swo
+*~
 .DS_Store
 Thumbs.db
 desktop.ini
+
+# ── Stray desktop folders accidentally included ───────────────────────────────
+Desktop/
