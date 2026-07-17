@@ -67,3 +67,15 @@ desktop.ini
 # ── Logs ─────────────────────────────────────────────────────────────────────
 *.log
 logs/
+
+# ── Real env / secrets (never commit these) ───────────────────────────────────
+.env
+config/settings.env
+*.secret
+*.secrets
+
+# ── Editor / OS ───────────────────────────────────────────────────────────────
+.vscode/
+.DS_Store
+Thumbs.db
+desktop.ini
