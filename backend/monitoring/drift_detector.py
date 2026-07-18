@@ -47,7 +47,6 @@ def detect_data_drift(reference_path: str = "data/training/reference.parquet",
             'drift_detected': report.as_dict()['metrics'][0]['result']['dataset_drift'],
             'column_drift': {}
         }
-
         # Add column-specific drift
         for i, metric in enumerate(report.as_dict()['metrics'][1:], 1):
             column_name = metric['metric_args']['column_name']
